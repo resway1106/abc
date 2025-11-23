@@ -3,386 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>敏捷思維導入教學行政 | 報名表</title>
-    <!-- 載入 Tailwind CSS 框架 -->
+    <title>報名現況儀表板 | Hello World 2025</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chart.js 圖表庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* 使用 Noto Sans TC 作為主要中文字體，Inter 作為英文字體 */
         body {
-            font-family: 'Noto Sans TC', 'Inter', sans-serif;
-            /* 設定漸層色背景：活潑、充滿活力 */
-            background: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #4ECDC4 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
         }
-
-        /* 報名表容器樣式 */
-        .form-container {
-            max-width: 900px;
-            width: 95%;
-            background-color: rgba(255, 255, 255, 0.95); /* 半透明白色背景 */
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            padding: 2.5rem;
-            animation: fadeIn 1s ease-out;
-        }
-
-        /* 標題動畫 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 活動資訊區塊的特殊樣式 */
-        .info-card {
-            background: #f7f9fc;
-            border-left: 5px solid #1abc9c;
-            border-radius: 10px;
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             padding: 1.5rem;
+            transition: transform 0.2s;
         }
-
-        /* 議程時間軸樣式 */
-        .timeline-item {
-            position: relative;
-            padding-left: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0.25rem;
-            width: 10px;
-            height: 10px;
-            background-color: #f39c12;
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 0 2px #1abc9c;
-        }
-
-        .timeline-item:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 4px;
-            top: 1rem;
-            height: 100%;
-            width: 2px;
-            background-color: #1abc9c;
-        }
-
-        /* 按鈕 hover 效果 */
-        .submit-btn:hover {
+        .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
-        /* 響應式調整 */
-        @media (max-width: 768px) {
-            .form-container {
-                padding: 1.5rem;
-            }
-            .timeline-item {
-                padding-left: 1.5rem;
-            }
-            .timeline-item::after {
-                height: calc(100% - 10px);
-            }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen p-6 bg-gradient-to-br from-gray-100 to-gray-200">
 
-    <div class="form-container">
-        <!-- 標題區塊 -->
-        <header class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-500 mb-2">
-                敏捷思維導入教學行政
-            </h1>
-            <p class="text-xl md:text-2xl font-bold text-gray-700">
-                Hello World 2025 開發者大會心得分享暨實務研討會
-            </p>
-            <div class="mt-4 inline-block px-4 py-1 bg-teal-500 text-white font-semibold rounded-full shadow-lg">
-                提升效率，擁抱變化！
+    <!-- Header -->
+    <div class="max-w-7xl mx-auto mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">📊 報名現況儀表板</h1>
+            <p class="text-gray-500 mt-1">Hello World 2025 開發者大會心得分享</p>
+        </div>
+        <button onclick="fetchData()" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            重新整理
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="flex flex-col items-center justify-center h-64">
+        <div class="loader mb-4"></div>
+        <p class="text-gray-500">正在從 Google Sheets 讀取資料...</p>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard" class="hidden max-w-7xl mx-auto space-y-6">
+        
+        <!-- 關鍵指標 (KPI Cards) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 總報名人數 -->
+            <div class="card border-l-4 border-blue-500">
+                <h3 class="text-gray-500 text-sm font-medium">總報名人數</h3>
+                <p class="text-4xl font-bold text-gray-800 mt-2" id="totalCount">0</p>
+                <p class="text-xs text-gray-400 mt-1">即時更新</p>
             </div>
-        </header>
-
-        <!-- 活動資訊區塊 -->
-        <section class="mb-10 p-6 info-card">
-            <h2 class="text-2xl font-bold text-teal-700 mb-3 flex items-center">
-                <svg class="w-6 h-6 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                活動資訊
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
-                <div>
-                    <p class="font-semibold text-gray-800">日期：</p>
-                    <p class="ml-2">2025 年 11 月 30 日 (日)</p>
-                </div>
-                <div>
-                    <p class="font-semibold text-gray-800">時間：</p>
-                    <p class="ml-2">14:00 - 17:00 (共 3 小時)</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="font-semibold text-gray-800">地點：</p>
-                    <p class="ml-2">第五醫療大樓 5F 552 會議室</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="font-semibold text-gray-800">目的：</p>
-                    <p class="ml-2 text-sm leading-relaxed">分享「敏捷開發 (Agile)」的核心精神，並共同探討如何將其應用於教學部的日常行政、專案管理 (如 QCC、OSCE 籌備) 中，以提升團隊效率與應變能力。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 活動議程區塊 -->
-        <section class="mb-10">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4 text-center">活動議程 (Agenda)</h2>
-            <div class="space-y-4">
-                <div class="timeline-item">
-                    <p class="font-bold text-lg text-red-500">14:00 - 14:15 | 報到與暖身 (Check-in)</p>
-                    <p class="text-gray-600 text-sm">領取名牌、享用茶點，並透過簡單的破冰遊戲認識跨部門夥伴。</p>
-                </div>
-                <div class="timeline-item">
-                    <p class="font-bold text-lg text-teal-500">14:15 - 15:00 | Session 1: 擁抱變化的勇氣</p>
-                    <p class="text-gray-600 text-sm">從 Hello World 2025 開發者大會看見趨勢。什麼是 Agile？為什麼原本用於軟體開發的思維，能解決行政工作的痛點？</p>
-                </div>
-                <div class="timeline-item">
-                    <p class="font-bold text-lg text-yellow-600">15:00 - 15:10 | 中場休息 (Break)</p>
-                    <p class="text-gray-600 text-sm">大腦充電與自由交流時間。</p>
-                </div>
-                <div class="timeline-item">
-                    <p class="font-bold text-lg text-blue-500">15:10 - 16:00 | Session 2: 行政實務應用案例</p>
-                    <p class="text-gray-600 text-sm">不再被 Deadline 追著跑！分享如何利用「視覺化看板 (Kanban)」與「迭代 (Iteration)」來優化 QCC 專案與 OSCE 考試籌備流程。</p>
-                </div>
-                <div class="timeline-item">
-                    <p class="font-bold text-lg text-purple-600">16:00 - 16:40 | Workshop: 敏捷實戰演練</p>
-                    <p class="text-gray-600 text-sm">分組工作坊：針對目前的行政痛點，實際演練一次「站立會議 (Daily Stand-up)」與「回顧會議 (Retrospective)」。</p>
-                </div>
-                <div class="timeline-item">
-                    <p class="font-bold text-lg text-green-500">16:40 - 17:00 | 總結與問答 (Q&A)</p>
-                    <p class="text-gray-600 text-sm">開放提問與講師總結。</p>
+            <!-- 需要茶點 -->
+            <div class="card border-l-4 border-yellow-500">
+                <h3 class="text-gray-500 text-sm font-medium">茶點需求人數</h3>
+                <p class="text-4xl font-bold text-gray-800 mt-2" id="snackCount">0</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                    <div id="snackProgress" class="bg-yellow-500 h-2.5 rounded-full" style="width: 0%"></div>
                 </div>
             </div>
-        </section>
-
-        <!-- 報名表單 -->
-        <section>
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center border-b-2 pb-2 border-teal-500">線上報名</h2>
-            <form id="registrationForm" onsubmit="handleRegistration(event)">
-                
-                <!-- 基本資料 -->
-                <div class="space-y-6">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4 border-l-4 pl-3 border-yellow-500">一、基本資料 (必填)</h3>
-                    
-                    <!-- 姓名 -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">姓名 <span class="text-red-500">*</span></label>
-                        <input type="text" id="name" name="name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-                    </div>
-
-                    <!-- 電子郵件 (Email) -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">電子郵件 (Email) <span class="text-red-500">*</span></label>
-                        <input type="email" id="email" name="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-                    </div>
-
-                    <!-- 單位 -->
-                    <div>
-                        <label for="unit" class="block text-sm font-medium text-gray-700">單位 <span class="text-red-500">*</span></label>
-                        <input type="text" id="unit" name="unit" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" placeholder="請填寫完整單位名稱">
-                    </div>
-
-                    <!-- 職稱 (必選) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">職稱 <span class="text-red-500">*</span></label>
-                        <div class="mt-1 grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <label class="inline-flex items-center p-3 bg-gray-100 rounded-lg shadow-inner cursor-pointer hover:bg-gray-200 transition">
-                                <input type="radio" name="title" value="醫師" required class="form-radio h-4 w-4 text-teal-600">
-                                <span class="ml-2 text-sm text-gray-700">醫師</span>
-                            </label>
-                            <label class="inline-flex items-center p-3 bg-gray-100 rounded-lg shadow-inner cursor-pointer hover:bg-gray-200 transition">
-                                <input type="radio" name="title" value="護理師" class="form-radio h-4 w-4 text-teal-600">
-                                <span class="ml-2 text-sm text-gray-700">護理師</span>
-                            </label>
-                            <label class="inline-flex items-center p-3 bg-gray-100 rounded-lg shadow-inner cursor-pointer hover:bg-gray-200 transition">
-                                <input type="radio" name="title" value="醫事人員" class="form-radio h-4 w-4 text-teal-600">
-                                <span class="ml-2 text-sm text-gray-700">醫事人員</span>
-                            </label>
-                            <label class="inline-flex items-center p-3 bg-gray-100 rounded-lg shadow-inner cursor-pointer hover:bg-gray-200 transition">
-                                <input type="radio" name="title" value="行政人員" class="form-radio h-4 w-4 text-teal-600">
-                                <span class="ml-2 text-sm text-gray-700">行政人員</span>
-                            </label>
-                            <label class="inline-flex items-center p-3 bg-gray-100 rounded-lg shadow-inner cursor-pointer hover:bg-gray-200 transition">
-                                <input type="radio" name="title" value="其他" class="form-radio h-4 w-4 text-teal-600">
-                                <span class="ml-2 text-sm text-gray-700">其他</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="h-px bg-gray-200 my-6"></div>
-
-                    <!-- 茶水點心 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">二、是否需要茶水點心？ <span class="text-red-500">*</span></label>
-                        <div class="mt-1 flex space-x-6">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="snacks" value="需要" required class="form-radio h-4 w-4 text-green-600">
-                                <span class="ml-2 text-sm text-gray-700">需要</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="snacks" value="不需要" class="form-radio h-4 w-4 text-red-600">
-                                <span class="ml-2 text-sm text-gray-700">不需要</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="h-px bg-gray-200 my-6"></div>
-
-                    <!-- 會前提問 -->
-                    <div>
-                        <label for="pre_question" class="block text-sm font-medium text-gray-700">三、會前提問 (選填)</label>
-                        <p class="text-xs text-gray-500 mb-1">您目前在行政工作上遇到的困難？或最想了解關於「敏捷」的哪個部分？</p>
-                        <textarea id="pre_question" name="pre_question" rows="4" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" placeholder="請在此填寫您的問題或痛點，讓我們更好地準備內容..."></textarea>
-                    </div>
-
-                </div>
-
-                <!-- 提交按鈕 -->
-                <div class="mt-8">
-                    <button type="submit" class="submit-btn w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-3 rounded-full text-lg shadow-xl transform transition duration-300 ease-in-out">
-                        確認送出報名
-                    </button>
-                </div>
-
-                <!-- 隱私聲明與聯絡資訊 -->
-                <div class="text-center mt-8 pt-4 border-t border-gray-200 text-sm text-gray-500">
-                    <p class="mb-2">主辦單位：奇美醫院教學部</p>
-                    <p>聯絡人：盧英云 (分機 57425)</p>
-                    <p class="mt-3 text-xs text-gray-400">本報名資料僅供本次研討會聯繫與餐點統計使用。</p>
-                </div>
-            </form>
-        </section>
-
-        <!-- 自訂訊息顯示區域 -->
-        <div id="messageBox" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-            <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm w-full">
-                <p id="messageText" class="text-lg font-semibold mb-4 text-gray-800"></p>
-                <button onclick="closeMessageBox()" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full transition duration-150">
-                    關閉
-                </button>
+            <!-- 參與單位數 -->
+            <div class="card border-l-4 border-green-500">
+                <h3 class="text-gray-500 text-sm font-medium">參與單位數</h3>
+                <p class="text-4xl font-bold text-gray-800 mt-2" id="unitCount">0</p>
+                <p class="text-xs text-gray-400 mt-1">來自不同部門的夥伴</p>
             </div>
         </div>
 
+        <!-- 圖表區域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 職稱分佈 (圓餅圖) -->
+            <div class="card">
+                <h3 class="text-lg font-bold text-gray-700 mb-4">👥 職稱分佈</h3>
+                <div class="relative h-64">
+                    <canvas id="titleChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 單位報名狀況 (長條圖) -->
+            <div class="card">
+                <h3 class="text-lg font-bold text-gray-700 mb-4">🏢 各單位報名狀況 (Top 5)</h3>
+                <div class="relative h-64">
+                    <canvas id="unitChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最新報名列表 -->
+        <div class="card overflow-hidden">
+            <h3 class="text-lg font-bold text-gray-700 mb-4">📋 最新 5 筆報名資料</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">姓名</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">單位</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">職稱</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">茶點</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Javascript 將在此插入資料 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
         // 🚨 GAS Web App 網址已更新為您提供的路徑 🚨
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwsVBci7v4jfAQS-efgwiWulH5H54evKQk_ER8mizEd7iqNwAYyVHE_ie7WuhcjeWVYBA/exec"; 
-        
-        // 模擬的 API 密鑰和 URL (不再用於提交表單，但保留 LLM 確認訊息功能)
-        const apiKey = ""; 
-        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwsVBci7v4jfAQS-efgwiWulH5H54evKQk_ER8mizEd7iqNwAYyVHE_ie7WuhcjeWVYBA/exec';
 
-        // 訊息視窗控制
-        function showMessageBox(message) {
-            document.getElementById('messageText').innerText = message;
-            document.getElementById('messageBox').classList.remove('hidden');
-        }
+        // Chart 實例 (用於更新/銷毀)
+        let titleChartInstance = null;
+        let unitChartInstance = null;
 
-        function closeMessageBox() {
-            document.getElementById('messageBox').classList.add('hidden');
-        }
+        // 初始化
+        fetchData();
 
         /**
-         * 處理表單提交：
-         * 1. 驗證資料。
-         * 2. 將資料 POST 給 Apps Script Web App。
-         * 3. 根據 GAS 的回覆顯示成功/失敗訊息。
+         * 帶有指數退避的 fetch 函數 (增加連線穩定性)
          */
-        async function handleRegistration(event) {
-            event.preventDefault(); // 阻止表單預設提交行為
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            // 確保必填欄位不為空
-            if (!data.name || !data.email || !data.unit || !data.title || !data.snacks) {
-                showMessageBox("請填寫所有標有 (*) 號的必填欄位！");
-                return;
-            }
-
-            // 顯示一個處理中的訊息
-            showMessageBox("資料處理中，請稍候...");
-            
-            try {
-                // 將 FormData 轉換為 URLSearchParams 格式 (Apps Script doPost 接受的格式)
-                const encodedData = new URLSearchParams(formData).toString();
-
-                // 步驟 1: 將資料 POST 給 Apps Script Web App
-                const gasResponse = await fetch(GAS_WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    cache: 'no-cache',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: encodedData
-                });
-                
-                // Apps Script 回覆通常是純文字或 JSON
-                const gasResult = await gasResponse.json();
-                
-                if (gasResult.success) {
-                    // 步驟 2: 如果 Apps Script 寫入成功，呼叫 LLM 生成活潑的確認訊息 (可選)
-                    const confirmMessage = await generateConfirmationMessage(data);
-
-                    showMessageBox(confirmMessage);
-                    // 成功後清空表單
-                    form.reset();
-                } else {
-                    // Apps Script 寫入失敗
-                    showMessageBox(`報名失敗！請聯繫主辦方 (分機 57425)。錯誤訊息：${gasResult.message}`);
-                }
-
-            } catch (error) {
-                console.error("Form Submission Error:", error);
-                showMessageBox(`連線或資料送出失敗，請檢查網路連線或 Apps Script 部署狀態。錯誤：${error.message}`);
-            }
-        }
-
-        /**
-         * 使用 LLM 生成活潑的報名確認訊息
-         */
-        async function generateConfirmationMessage(data) {
-             const userQuery = `我剛剛在「敏捷思維導入教學行政」研討會上提交了報名。請根據以下報名資料，以一個活潑、充滿能量的行政人員口吻，寫一段 50 字以內的確認訊息，內容須包含：感謝報名、提到活動日期 (11/30)，並表示期待見面。報名者姓名：${data.name}，電子郵件：${data.email}，職稱：${data.title}。`;
-
-            try {
-                const response = await fetchWithRetry(LLM_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userQuery }] }],
-                        systemInstruction: {
-                            parts: [{ text: "你是一位充滿活力且友善的研討會主辦方行政人員。請使用中文回應。" }]
-                        },
-                    })
-                });
-                
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || "報名成功！我們已成功收到您的資料，期待 11/30 見！一起擁抱變化吧！";
-
-            } catch (error) {
-                console.error("LLM API Call Error:", error);
-                return "報名成功！我們已成功收到您的資料並寫入 Google Sheets，期待 11/30 見！";
-            }
-        }
-
-        // 帶有指數退避的 fetch 函數
-        async function fetchWithRetry(url, options, maxRetries = 5) {
+        async function fetchWithRetry(url, options = {}, maxRetries = 5) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     const response = await fetch(url, options);
@@ -404,6 +164,166 @@
                     }
                 }
             }
+        }
+
+        async function fetchData() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+
+            try {
+                // 使用 fetchWithRetry 提高連線穩定性，並明確設定 mode: 'cors'
+                const response = await fetchWithRetry(GAS_URL, {
+                    method: 'GET', // 明確指出這是 GET 請求
+                    mode: 'cors',  // 跨域請求
+                    cache: 'no-cache'
+                });
+                
+                // 檢查 Content-Type，如果 Apps Script 返回錯誤頁面 (通常是 HTML) 而不是 JSON，會導致 .json() 失敗。
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    console.error("Received non-JSON response. Check Apps Script deployment settings.");
+                    throw new Error("伺服器回應格式錯誤，請確認 Apps Script 部署設定：執行身份為「我」，存取權限為「所有人」。");
+                }
+
+
+                const result = await response.json();
+
+                if (result.success) {
+                    renderDashboard(result.data);
+                } else {
+                    // 使用 custom modal 而非 alert
+                    showMessageBox('讀取失敗：' + result.message);
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                // 顯示更詳細的錯誤訊息
+                showMessageBox(`連線錯誤，請檢查 Apps Script 部署狀態或網址是否正確：${error.message}`);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+            }
+        }
+
+        function renderDashboard(data) {
+            if(!data || data.length === 0) {
+                document.getElementById('totalCount').innerText = "0";
+                // 確保在無資料時也清除圖表
+                if (titleChartInstance) titleChartInstance.destroy();
+                if (unitChartInstance) unitChartInstance.destroy();
+                document.getElementById('recentTableBody').innerHTML = '';
+                return;
+            }
+
+            // 1. 計算關鍵指標
+            const total = data.length;
+            const snackYes = data.filter(d => d.snacks === '需要').length;
+            const uniqueUnits = new Set(data.map(d => d.unit)).size;
+
+            // 更新 DOM
+            document.getElementById('totalCount').innerText = total;
+            document.getElementById('snackCount').innerText = snackYes;
+            document.getElementById('unitCount').innerText = uniqueUnits;
+            
+            // 更新進度條
+            const snackPercent = Math.round((snackYes / total) * 100);
+            document.getElementById('snackProgress').style.width = `${snackPercent}%`;
+
+            // 2. 準備圖表數據
+            // 職稱統計
+            const titleCounts = {};
+            data.forEach(d => { titleCounts[d.title] = (titleCounts[d.title] || 0) + 1; });
+
+            // 單位統計 (取前 5 名)
+            const unitCounts = {};
+            data.forEach(d => { 
+                const unitName = d.unit || '未填寫'; // 處理空值
+                unitCounts[unitName] = (unitCounts[unitName] || 0) + 1; 
+            });
+            const sortedUnits = Object.entries(unitCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            // 3. 繪製職稱圓餅圖
+            const ctxTitle = document.getElementById('titleChart').getContext('2d');
+            if (titleChartInstance) titleChartInstance.destroy();
+            
+            titleChartInstance = new Chart(ctxTitle, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(titleCounts),
+                    datasets: [{
+                        data: Object.values(titleCounts),
+                        backgroundColor: ['#FF6B6B', '#4ECDC4', '#FFD93D', '#1A535C', '#F7FFF7'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            // 4. 繪製單位長條圖
+            const ctxUnit = document.getElementById('unitChart').getContext('2d');
+            if (unitChartInstance) unitChartInstance.destroy();
+
+            unitChartInstance = new Chart(ctxUnit, {
+                type: 'bar',
+                data: {
+                    labels: sortedUnits.map(i => i[0]),
+                    datasets: [{
+                        label: '報名人數',
+                        data: sortedUnits.map(i => i[1]),
+                        backgroundColor: '#4ECDC4',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // 轉為橫向長條圖
+                    scales: {
+                        x: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+
+            // 5. 更新最新列表表格 (取最後 5 筆並反轉順序)
+            const recentData = data.slice(-5).reverse();
+            const tbody = document.getElementById('recentTableBody');
+            tbody.innerHTML = '';
+
+            recentData.forEach(row => {
+                // 格式化時間
+                let timeStr = row.timestamp;
+                try {
+                    const date = new Date(row.timestamp);
+                    // 加上年份判斷，避免跨年問題
+                    const now = new Date();
+                    const year = date.getFullYear() === now.getFullYear() ? '' : `${date.getFullYear()}/`;
+                    timeStr = `${year}${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                } catch(e) {}
+
+                const tr = `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timeStr}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${row.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${row.unit}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                ${row.title}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${row.snacks === '需要' ? '🍪' : '-'}
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
         }
     </script>
 </body>
